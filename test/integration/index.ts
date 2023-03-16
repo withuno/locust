@@ -2,10 +2,7 @@
 
 import path from 'path';
 
-import type { Page } from 'puppeteer';
-import puppeteer from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-
+import { initializePuppeteer, Page, waitForPageLoad } from './puppeteer';
 import TESTS from './test-forms.json';
 
 type TestCase = (typeof TESTS)[number];
@@ -13,18 +10,22 @@ type TestCase = (typeof TESTS)[number];
 const LOCUST_PATH = path.resolve(__dirname, '../../dist/iife/index.js');
 
 async function executeTestCase(config: TestCase, page: Page) {
-  const { name, url, expectedFields } = config;
-  console.log(` - Testing: ${name}`);
+  const { url, expectedFields } = config;
+
   if (!expectedFields) {
     throw new Error(`Invalid test: No expected fields provided`);
   }
+
   const waitForUsernameQuery = expectedFields.username || 'body';
   const waitForPasswordQuery = expectedFields.password || 'body';
+
   await page.goto(url);
   await page.setBypassCSP(true);
   await page.addScriptTag({ path: LOCUST_PATH });
+
   await page.waitForSelector(waitForUsernameQuery);
   await page.waitForSelector(waitForPasswordQuery);
+
   await page.evaluate(function (expectedFields) {
     if (!(window as any).Locust) {
       throw new Error('No global Locust variable found');
@@ -48,29 +49,51 @@ async function executeTestCase(config: TestCase, page: Page) {
   }, expectedFields);
 }
 
-async function main() {
-  console.log('\nRunning integration tests:');
+async function executeAdHocTest(url: string, page: Page) {
+  await page.goto(url);
+  await page.setBypassCSP(true);
+  await page.addScriptTag({ path: LOCUST_PATH });
 
-  puppeteer.use(StealthPlugin());
+  await waitForPageLoad(page);
 
-  const browser = await puppeteer.launch({
-    ignoreHTTPSErrors: true,
-    args: ['--disable-web-security', '--allow-running-insecure-content'],
+  await page.evaluate(function () {
+    if (!(window as any).Locust) {
+      throw new Error('No global Locust variable found');
+    }
+    const target = (window as any).Locust.getLoginTarget();
+    if (!target) {
+      throw new Error('No login targets found');
+    }
   });
+}
+
+async function main() {
+  const [url] = process.argv.slice(2);
+
+  const browser = await initializePuppeteer();
   const page = await browser.newPage();
 
   try {
-    for (const test of TESTS) {
-      // eslint-disable-next-line no-await-in-loop
-      await executeTestCase(test, page);
+    if (url) {
+      console.log(`\n□ Testing: ${url}`);
+      await executeAdHocTest(url, page);
+      console.log(`■ Test complete.`);
+    } else {
+      console.log(`\n□ Running ${TESTS.length} integration tests:`);
+      try {
+        for (const test of TESTS) {
+          console.log(`  - Testing: ${test.name}`);
+          // eslint-disable-next-line no-await-in-loop
+          await executeTestCase(test, page);
+        }
+      } catch (err) {
+        console.error(`  × Failure: ${err}`);
+      }
+      console.log(`■ Tests complete.`);
     }
-  } catch (err) {
-    console.log(err);
   } finally {
     await browser.close();
   }
-
-  console.log('Tests complete.');
 }
 
 main().catch((err) => {
