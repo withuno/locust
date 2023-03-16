@@ -3,7 +3,7 @@
 module.exports = (config) =>
   config.set({
     basePath: __dirname,
-    browsers: ['Chrome'],
+    browsers: ['ChromeCI'],
     captureTimeout: 60000,
     colors: true,
     frameworks: ['karma-typescript', 'mocha', 'chai', 'sinon'],
@@ -15,6 +15,12 @@ module.exports = (config) =>
       require('karma-sinon'),
       require('karma-spec-reporter'),
     ],
+    customLaunchers: {
+      ChromeCI: {
+        base: 'ChromeHeadless',
+        flags: ['--disable-web-security'],
+      },
+    },
     reporters: ['spec', 'progress'],
     singleRun: false,
     exclude: [],

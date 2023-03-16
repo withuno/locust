@@ -9,6 +9,7 @@ const javascriptRules = {
   'no-param-reassign': 'off',
   'no-nested-ternary': 'off',
   'no-underscore-dangle': 'off',
+  'no-unused-expressions': 'off',
   'no-restricted-globals': 'off',
   'no-inner-declarations': 'off',
   'no-useless-constructor': 'off',
@@ -67,6 +68,9 @@ module.exports = {
         '@ikscodes/eslint-config/rules/prettier',
       ],
       rules: typescriptRules,
+      parserOptions: {
+        project: '**/tsconfig.json',
+      },
     },
   ],
 };
