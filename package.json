@@ -1,6 +1,6 @@
 {
   "name": "@withuno/locust",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A fork of @buttercup/locust with TypeScript support and new features incoming...",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
