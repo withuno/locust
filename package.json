@@ -14,6 +14,7 @@
     "import": "./dist/esm/index.mjs",
     "require": "./dist/cjs/index.js"
   },
+  "jsdelivr": "./dist/iife/index.js",
   "files": [
     "dist"
   ],
