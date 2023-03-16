@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        ci-test: ["general", "integration"]
+        ci-test: ["unit", "integration"]
     steps:
       - uses: actions/checkout@v2
       - name: Build w/ Node ${{ matrix.node-version }}
@@ -16,7 +16,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - name: Test (${{ matrix.ci-test }})
+      - name: Run unit tests
         uses: GabrielBB/xvfb-action@v1.0
         with:
-          run: npm run test:ci:${{ matrix.ci-test }}
+          run: npm run test
+      - name: Run integration tests
+        uses: GabrielBB/xvfb-action@v1.0
+        with:
+          run: npm run test

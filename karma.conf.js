@@ -1,46 +1,28 @@
-const [webpackConfig] = require("./webpack.config.js");
+/* eslint-disable global-require */
 
-delete webpackConfig.entry;
-
-module.exports = config => config.set({
-
+module.exports = (config) =>
+  config.set({
     basePath: __dirname,
-
-    browsers: ["Chrome"],
-
+    browsers: ['Chrome'],
     captureTimeout: 60000,
-
     colors: true,
-
-    exclude: [],
-
-    files: [
-        "source/index.js",
-        "test/index.js",
-        "test/unit/**/*.spec.js"
-    ],
-
-    frameworks: ["mocha", "chai", "sinon"],
-
+    frameworks: ['karma-typescript', 'mocha', 'chai', 'sinon'],
     plugins: [
-        require("karma-webpack"),
-        require("karma-chrome-launcher"),
-        require("karma-mocha"),
-        require("karma-chai"),
-        require("karma-sinon"),
-        require("karma-spec-reporter")
+      require('karma-typescript'),
+      require('karma-chrome-launcher'),
+      require('karma-mocha'),
+      require('karma-chai'),
+      require('karma-sinon'),
+      require('karma-spec-reporter'),
     ],
-
-    preprocessors: {
-        "source/**/*.js": ["webpack"],
-        "test/unit/index.js": ["webpack"],
-        "test/unit/**/*.spec.js": ["webpack"]
-    },
-
-    reporters: ["spec", "progress"],
-
+    reporters: ['spec', 'progress'],
     singleRun: false,
-
-    webpack: webpackConfig
-
-});
+    exclude: [],
+    files: ['src/**/*.ts', 'test/unit/**/*.spec.ts'],
+    preprocessors: {
+      '**/*.ts': 'karma-typescript',
+    },
+    karmaTypescriptConfig: {
+      tsconfig: './test/tsconfig.json',
+    },
+  });

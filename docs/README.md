@@ -1,6 +1,8 @@
+@withuno/locust / [Exports](modules.md)
+
 # Locust
 
-> Login form location utility forked from [`@buttercup/locust`](https://github.com/buttercup/locust).
+> Login form location utility forked from [`@buttercup/locust`]()
 
 ## About
 
@@ -13,7 +15,7 @@ Locust helps find **login forms** by searching the DOM for common login form ele
 ## Usage
 
 ```ts
-import { getLoginTarget } from "@withuno/locust";
+import { getLoginTarget } from "@buttercup/locust";
 const { getLoginTarget } = Locust;
 
 getLoginTarget().login("myUsername", "myPassword");
