@@ -14,12 +14,34 @@ export async function initializePuppeteer() {
 }
 
 /**
+ * Hooks into the `console.log` stream from the given `page`.
+ *
+ * Note: messages must be prefixed with "[__uno_locust__]" to be evaluated here.
+ *
+ * @param page A Puppeteer `Page` instance.
+ */
+export function forwardPageConsole(page: Page) {
+  page.on('console', async (msg) => {
+    const msgArgs = msg.args();
+    for (let i = 0; i < msgArgs.length; ++i) {
+      // eslint-disable-next-line no-await-in-loop
+      const jsonValue = await msgArgs[i].jsonValue();
+      if (i === 0 && typeof jsonValue === 'string' && jsonValue.startsWith('[__uno_locust__]')) {
+        console.log(jsonValue.replace('[__uno_locust__]', ''));
+      } else {
+        break;
+      }
+    }
+  });
+}
+
+/**
  * A custom "page-loaded" heuristic which waits for all assets to be ready.
  *
  * We use this to target integration tests are arbitrary domains
  * which aren't already marshalled in `test-form.json`.
  *
- * @param page A Puppeteer `Page` to wait for a "loaded" state.
+ * @param page A Puppeteer `Page` instance.
  */
 export async function waitForPageLoad(page: Page) {
   // Wait until all images and fonts have loaded

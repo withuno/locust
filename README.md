@@ -25,14 +25,13 @@ _To find all forms on a page, use the `getLoginTargets` method instead, which re
 
 In the case that you don't want to automatically log in, but still enter the details, you can use the following example:
 
+> **Note**
+> `getLoginTarget` may return `null` if no form is found.
+
 ```ts
 getLoginTarget().enterDetails("myUsername", "myPassword");
 ```
 
-> **Note**
-> `getLoginTarget` may return `null` if no form is found.
-
-You can also read the [API documentation](https://github.com/buttercup/locust/blob/master/API.md) if you're into that kind of thing.
 
 ### Events
 
@@ -62,4 +61,39 @@ target.once("formSubmitted", ({ source }) => {
 
 ## Development
 
-You can run `npm run dev` to generate and watch-files to develop Locust.
+### Environment Setup
+
+1. First, download all dependencies using NPM:
+
+   ```zsh
+   npm install
+   ```
+
+2. You can start serving a hot-reloading development server with the following command:
+
+   ```zsh
+   npm run dev
+   ```
+
+### Testing
+
+**Unit tests:**
+
+```zsh
+npm run test:unit
+```
+
+**Integration tests:**
+
+```zsh
+npm run test:integration
+```
+
+**Ad-hoc integration test:**
+
+```zsh
+npm run test:integration <url>
+
+# for example:
+npm run test:integration https://github.com/login
+```

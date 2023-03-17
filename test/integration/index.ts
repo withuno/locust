@@ -2,8 +2,9 @@
 
 import path from 'path';
 
-import { initializePuppeteer, Page, waitForPageLoad } from './puppeteer';
+import { forwardPageConsole, initializePuppeteer, Page, waitForPageLoad } from './puppeteer';
 import TESTS from './test-forms.json';
+import type { LoginTarget } from '../../src';
 
 type TestCase = (typeof TESTS)[number];
 
@@ -30,10 +31,13 @@ async function executeTestCase(config: TestCase, page: Page) {
     if (!(window as any).Locust) {
       throw new Error('No global Locust variable found');
     }
-    const target = (window as any).Locust.getLoginTarget();
+
+    const target: LoginTarget = (window as any).Locust.getLoginTarget();
+
     if (!target) {
       throw new Error('No login targets found');
     }
+
     if (expectedFields && expectedFields.username) {
       const usernameField = document.querySelector(expectedFields.username);
       if (target.usernameField !== usernameField) {
@@ -45,6 +49,16 @@ async function executeTestCase(config: TestCase, page: Page) {
       if (target.passwordField !== passwordField) {
         throw new Error(`No password field found matching query: ${expectedFields.password}`);
       }
+    }
+
+    if (target.usernameField) {
+      console.log(`[__uno_locust__]  - found username field`);
+    }
+    if (target.passwordField) {
+      console.log(`[__uno_locust__]  - found password field`);
+    }
+    if (target.submitButton) {
+      console.log(`[__uno_locust__]  - found submit button`);
     }
   }, expectedFields);
 }
@@ -60,10 +74,35 @@ async function executeAdHocTest(url: string, page: Page) {
     if (!(window as any).Locust) {
       throw new Error('No global Locust variable found');
     }
-    const target = (window as any).Locust.getLoginTarget();
-    if (!target) {
-      throw new Error('No login targets found');
-    }
+
+    return new Promise((resolve, reject) => {
+      // Check once per second for login targets on the page.
+      const interval = setInterval(() => {
+        const target = (window as any).Locust.getLoginTarget();
+
+        if (!target) {
+          return; // we'll try again next internal
+        }
+
+        if (target.usernameField) {
+          console.log(`[__uno_locust__]  - found username field`);
+        }
+        if (target.passwordField) {
+          console.log(`[__uno_locust__]  - found password field`);
+        }
+        if (target.submitButton) {
+          console.log(`[__uno_locust__]  - found submit button`);
+        }
+
+        resolve(true);
+      }, 1000);
+
+      // If no login targets are found after 30s, we give up.
+      setTimeout(() => {
+        clearInterval(interval);
+        reject(new Error('No login targets found'));
+      }, 30000);
+    });
   });
 }
 
@@ -72,6 +111,7 @@ async function main() {
 
   const browser = await initializePuppeteer();
   const page = await browser.newPage();
+  forwardPageConsole(page);
 
   try {
     if (url) {
