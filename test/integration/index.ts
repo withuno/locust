@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 
+import fs from 'fs';
 import path from 'path';
 
 import { forwardPageConsole, initializePuppeteer, Page, waitForPageLoad } from './puppeteer';
@@ -7,9 +8,24 @@ import TESTS from './test-forms.json';
 import type { LoginTarget } from '../../src';
 
 type TestCase = (typeof TESTS)[number];
+const LOCUST_PATH = path.resolve(__dirname, '../dist/iife/index.js');
 
-const LOCUST_PATH = path.resolve(__dirname, '../../dist/iife/index.js');
+/**
+ * Loads the Locust JS script into the given `page`.
+ *
+ * @param page A Puppeteer `Page` instance.
+ */
+async function loadLocustScript(page: Page) {
+  const locustScript = (await fs.promises.readFile(LOCUST_PATH)).toString();
+  await page.evaluate(locustScript);
+}
 
+/**
+ * Executes a single, pre-defined integration test case.
+ *
+ * @param config A single `TestCase` config.
+ * @param page A Puppeteer `Page` instance.
+ */
 async function executeTestCase(config: TestCase, page: Page) {
   const { url, expectedFields } = config;
 
@@ -21,8 +37,7 @@ async function executeTestCase(config: TestCase, page: Page) {
   const waitForPasswordQuery = expectedFields.password || 'body';
 
   await page.goto(url);
-  await page.setBypassCSP(true);
-  await page.addScriptTag({ path: LOCUST_PATH });
+  await loadLocustScript(page);
 
   await page.waitForSelector(waitForUsernameQuery);
   await page.waitForSelector(waitForPasswordQuery);
@@ -50,23 +65,18 @@ async function executeTestCase(config: TestCase, page: Page) {
         throw new Error(`No password field found matching query: ${expectedFields.password}`);
       }
     }
-
-    if (target.usernameField) {
-      console.log(`[__uno_locust__]  - found username field`);
-    }
-    if (target.passwordField) {
-      console.log(`[__uno_locust__]  - found password field`);
-    }
-    if (target.submitButton) {
-      console.log(`[__uno_locust__]  - found submit button`);
-    }
   }, expectedFields);
 }
 
+/**
+ * Executes a single, arbitrarily-defined integration test.
+ *
+ * @param url The target URL for this test.
+ * @param page A Puppeteer `Page` instance.
+ */
 async function executeAdHocTest(url: string, page: Page) {
   await page.goto(url);
-  await page.setBypassCSP(true);
-  await page.addScriptTag({ path: LOCUST_PATH });
+  await loadLocustScript(page);
 
   await waitForPageLoad(page);
 
@@ -97,20 +107,25 @@ async function executeAdHocTest(url: string, page: Page) {
         resolve(true);
       }, 1000);
 
-      // If no login targets are found after 30s, we give up.
+      // If no login targets are found after 15s, we give up.
       setTimeout(() => {
         clearInterval(interval);
         reject(new Error('No login targets found'));
-      }, 30000);
+      }, 15000);
     });
   });
 }
 
+/**
+ * Run the integration test suite or a single, arbitrary
+ * test based on the given command-line arguments.
+ */
 async function main() {
   const [url] = process.argv.slice(2);
 
   const browser = await initializePuppeteer();
   const page = await browser.newPage();
+  await page.setBypassCSP(true);
   forwardPageConsole(page);
 
   try {
@@ -136,6 +151,7 @@ async function main() {
   }
 }
 
+// Here we go!
 main().catch((err) => {
   console.error(err);
   process.exit(1);

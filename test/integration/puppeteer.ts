@@ -4,6 +4,9 @@ import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 export { Page };
 
+/**
+ * Initializes and returns a Puppeteer browser instance.
+ */
 export async function initializePuppeteer() {
   puppeteer.use(StealthPlugin());
 

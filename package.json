@@ -19,14 +19,17 @@
     "dist"
   ],
   "scripts": {
-    "dev": "melodist dev --outdir dist --platform browser -f cjs -f esm -f iife --name Locust",
-    "build": "melodist build --no-minify --outdir dist --platform browser -f cjs -f esm -f iife --name Locust",
-    "clean": "rimraf dist",
+    "dev": "npm run clean:dist && melodist dev --outdir dist --platform browser -f cjs -f esm -f iife --name Locust",
+    "build": "npm run clean:dist && melodist build --outdir dist --platform browser -f cjs -f esm -f iife --name Locust",
+    "build:test": "npm run clean:test && melodist build --no-minify --outdir test/dist --platform browser -f iife --no-typecheck --name Locust",
+    "clean": "run-s clean:*",
+    "clean:dist": "rimraf dist",
+    "clean:test": "rimraf test/dist",
     "serve": "serve ./dist/ -p 8081",
     "test": "run-s test:unit test:integration",
     "test:unit": "karma start --single-run",
     "test:unit:watch": "karma start --auto-watch",
-    "test:integration": "npm run build && ts-node test/integration/index.ts",
+    "test:integration": "npm run build:test && ts-node test/integration/index.ts",
     "prepare": "husky install"
   },
   "devDependencies": {
