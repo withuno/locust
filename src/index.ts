@@ -1,7 +1,7 @@
-import { getSharedObserver } from './UnloadObserver';
+import { getSharedObserver } from './unload-observer';
 
 // Initialise the DOM unload observer
 getSharedObserver();
 
-export { LoginTarget, LoginTargetType } from './LoginTarget';
-export { getLoginTarget, getLoginTargets } from './loginTargets';
+export { LoginTarget, LoginTargetType } from './login/login-target';
+export { getLoginTarget, getLoginTargets } from './login';

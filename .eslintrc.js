@@ -55,6 +55,13 @@ module.exports = {
     '@ikscodes/eslint-config/rules/eslint',
     '@ikscodes/eslint-config/rules/prettier',
   ],
+  settings: {
+    'import/resolver': {
+      typescript: {
+        project: '**/tsconfig.json',
+      },
+    },
+  },
   rules: javascriptRules,
 
   overrides: [
@@ -67,10 +74,17 @@ module.exports = {
         '@ikscodes/eslint-config/rules/eslint',
         '@ikscodes/eslint-config/rules/prettier',
       ],
-      rules: typescriptRules,
+      settings: {
+        'import/resolver': {
+          typescript: {
+            project: '**/tsconfig.json',
+          },
+        },
+      },
       parserOptions: {
         project: '**/tsconfig.json',
       },
+      rules: typescriptRules,
     },
   ],
 };

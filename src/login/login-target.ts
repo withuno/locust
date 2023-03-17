@@ -1,8 +1,8 @@
 import EventEmitter from 'eventemitter3';
 import { isVisible } from 'is-visible';
 
-import { setInputValue } from './inputs';
-import { getSharedObserver as getUnloadObserver } from './UnloadObserver';
+import { setInputValue } from './login-inputs';
+import { getSharedObserver } from '../unload-observer';
 
 export const FORCE_SUBMIT_DELAY = 7500;
 
@@ -276,7 +276,7 @@ export class LoginTarget extends EventEmitter {
    * expired for the page has begun unloading.
    */
   _waitForNoUnload() {
-    const unloadObserver = getUnloadObserver();
+    const unloadObserver = getSharedObserver();
     return Promise.race([
       new Promise((resolve) => {
         setTimeout(() => {

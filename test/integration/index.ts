@@ -3,9 +3,10 @@
 import fs from 'fs';
 import path from 'path';
 
+import type { LoginTarget } from '@src/index';
+
 import { forwardPageConsole, initializePuppeteer, Page, waitForPageLoad } from './puppeteer';
 import TESTS from './test-forms.json';
-import type { LoginTarget } from '../../src';
 
 type TestCase = (typeof TESTS)[number];
 const LOCUST_PATH = path.resolve(__dirname, '../dist/iife/index.js');

@@ -1,6 +1,6 @@
 import { isVisible } from 'is-visible';
 
-import { FORM_QUERIES, PASSWORD_QUERIES, SUBMIT_BUTTON_QUERIES, USERNAME_QUERIES } from './inputPatterns.js';
+import { FORM_QUERIES, PASSWORD_QUERIES, SUBMIT_BUTTON_QUERIES, USERNAME_QUERIES } from './input-patterns.js';
 
 const FORM_ELEMENT_SCORING = {
   username: [
@@ -39,22 +39,23 @@ const FORM_ELEMENT_SCORING = {
     { test: /<a .*data-uno-haslogintext="yes"/, value: 2 },
   ],
 };
+
 const VISIBILE_SCORE_INCREMENT = 8;
 
 const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')!.set!;
 
-function fetchForms(queryEl: Document | HTMLElement = document) {
+function findForms(queryEl: Document | HTMLElement = document) {
   return Array.prototype.slice.call(queryEl.querySelectorAll(FORM_QUERIES.join(',')));
 }
 
-export function fetchFormsWithInputs(queryEl: Document | HTMLElement = document) {
-  return fetchForms(queryEl)
+export function findFormsWithInputs(queryEl: Document | HTMLElement = document) {
+  return findForms(queryEl)
     .map((formEl) => {
       const form = {
         form: formEl,
-        usernameFields: fetchUsernameInputs(formEl),
-        passwordFields: fetchPasswordInputs(formEl),
-        submitButtons: fetchSubmitButtons(formEl),
+        usernameFields: findUsernameInputs(formEl),
+        passwordFields: findPasswordInputs(formEl),
+        submitButtons: findSubmitButtons(formEl),
       };
       if (form.usernameFields.length <= 0) {
         const input = guessUsernameInput(formEl);
@@ -67,19 +68,19 @@ export function fetchFormsWithInputs(queryEl: Document | HTMLElement = document)
     .filter((form) => form.passwordFields.length + form.usernameFields.length > 0);
 }
 
-function fetchPasswordInputs(queryEl = document) {
+function findPasswordInputs(queryEl = document) {
   const megaQuery = PASSWORD_QUERIES.join(', ');
   const inputs = Array.prototype.slice.call(queryEl.querySelectorAll(megaQuery));
   return sortFormElements(inputs, 'password');
 }
 
-function fetchSubmitButtons(queryEl = document) {
+function findSubmitButtons(queryEl = document) {
   const megaQuery = SUBMIT_BUTTON_QUERIES.join(', ');
   const inputs = Array.prototype.slice.call(queryEl.querySelectorAll(megaQuery));
   return sortFormElements(inputs, 'submit');
 }
 
-function fetchUsernameInputs(queryEl = document) {
+function findUsernameInputs(queryEl = document) {
   const megaQuery = USERNAME_QUERIES.join(', ');
   const inputs = Array.prototype.slice.call(queryEl.querySelectorAll(megaQuery));
   return sortFormElements(inputs, 'username');
