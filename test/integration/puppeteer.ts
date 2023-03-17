@@ -11,7 +11,6 @@ export async function initializePuppeteer() {
   puppeteer.use(StealthPlugin());
 
   return puppeteer.launch({
-    executablePath: process.env.PUPPETEER_EXEC_PATH,
     ignoreHTTPSErrors: true,
     args: ['--disable-web-security', '--allow-running-insecure-content'],
   });

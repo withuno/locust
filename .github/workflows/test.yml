@@ -6,24 +6,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install dependencies
-        uses: actions/setup-node@v3
-        env:
-          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          args: install
+      - name: Install dependencies
+        run: npm ci
       - name: Run unit tests
-        uses: mujo-code/puppeteer-headful@16.6.0
-        env:
-          CI: "true"
+        uses: GabrielBB/xvfb-action@v1.0
         with:
-          args: npm test:unit
+          run: npm run test:unit
       - name: Run integration tests
-        uses: mujo-code/puppeteer-headful@16.6.0
-        env:
-          CI: "true"
+        uses: GabrielBB/xvfb-action@v1.0
         with:
-          args: npm test:integration
+          run: npm run test:integration
