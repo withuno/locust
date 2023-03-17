@@ -14,19 +14,22 @@
     "import": "./dist/esm/index.mjs",
     "require": "./dist/cjs/index.js"
   },
+  "jsdelivr": "./dist/iife/index.js",
   "files": [
     "dist"
   ],
   "scripts": {
-    "dev": "melodist dev --outdir dist --platform browser -f cjs -f esm -f iife --name Locust",
-    "build": "melodist build --no-minify --outdir dist --platform browser -f cjs -f esm -f iife --name Locust",
-    "clean": "rimraf dist",
-    "docs": "typedoc --plugin typedoc-plugin-markdown --out docs --githubPages false src/index.ts",
+    "dev": "npm run clean:dist && melodist dev --outdir dist --platform browser -f cjs -f esm -f iife --name Locust",
+    "build": "npm run clean:dist && melodist build --outdir dist --platform browser -f cjs -f esm -f iife --name Locust",
+    "build:test": "npm run clean:test && melodist build --no-minify --outdir test/dist --platform browser -f iife --no-typecheck --name Locust",
+    "clean": "run-s clean:*",
+    "clean:dist": "rimraf dist",
+    "clean:test": "rimraf test/dist",
     "serve": "serve ./dist/ -p 8081",
     "test": "run-s test:unit test:integration",
     "test:unit": "karma start --single-run",
     "test:unit:watch": "karma start --auto-watch",
-    "test:integration": "npm run build && ts-node test/integration/index.ts",
+    "test:integration": "npm run build:test && ts-node test/integration/index.ts",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -68,8 +71,6 @@
     "serve": "^14.0.1",
     "sinon": "^14.0.0",
     "ts-node": "~10.9.1",
-    "typedoc": "~0.23.27",
-    "typedoc-plugin-markdown": "~3.14.0",
     "typescript": "~4.9.5"
   }
 }
