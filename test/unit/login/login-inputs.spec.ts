@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { FORM_QUERIES } from '../../src/inputPatterns.js';
-import { fetchFormsWithInputs, setInputValue, sortFormElements } from '../../src/inputs.js';
+import { FORM_QUERIES } from '@src/login/input-patterns';
+import { findFormsWithInputs, setInputValue, sortFormElements } from '@src/login/login-inputs';
 
 describe('inputs', function () {
   describe('fetchFormsWithInputs', function () {
@@ -21,7 +21,7 @@ describe('inputs', function () {
     });
 
     it('fetches forms by name', function (this: FetchFormsWithInputsContext) {
-      fetchFormsWithInputs(this.queryEl as any);
+      findFormsWithInputs(this.queryEl as any);
       expect(this.queryEl.querySelectorAll.calledWithExactly(FORM_QUERIES.join(','))).to.be.true;
       expect(this.queryEl.querySelectorAll.calledOnce).to.be.true;
     });
@@ -33,7 +33,7 @@ describe('inputs', function () {
         tagName: 'form',
       };
       this.forms.push(fakeForm);
-      fetchFormsWithInputs(this.queryEl as any);
+      findFormsWithInputs(this.queryEl as any);
       expect(fakeForm.querySelectorAll.calledThrice).to.be.true;
     });
 
@@ -49,7 +49,7 @@ describe('inputs', function () {
         tagName: 'form',
       };
       this.forms.push(fakeForm);
-      const forms = fetchFormsWithInputs(this.queryEl as any);
+      const forms = findFormsWithInputs(this.queryEl as any);
       expect(forms).to.have.lengthOf(0);
     });
   });

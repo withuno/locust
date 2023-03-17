@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { setInputValue } from '../../src/inputs.js';
-import { LoginTarget } from '../../src/LoginTarget.js';
+import { setInputValue } from '@src/login/login-inputs';
+import { LoginTarget } from '@src/login/login-target';
 
 describe('LoginTarget', function () {
   beforeEach(function () {

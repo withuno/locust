@@ -1,7 +1,8 @@
-import { SUBMIT_BUTTON_QUERIES } from './inputPatterns';
+import { SUBMIT_BUTTON_QUERIES } from './input-patterns';
 
 const LOGIN_BUTTON_ATTR = 'data-uno-haslogintext';
-const LOGIN_TEXT_REXP = /^(login|log in|log-in|signin|sign in|sign-in|enter|next|continue)$/i;
+const LOGIN_TEXT_REXP =
+  /^(login|log in|log-in|logon|log on|log-on|signin|sign in|sign-in|confirm|enter|next|continue)$/i;
 const REGULAR_BUTTONS = ['button', 'a'];
 
 export function revealShySubmitButtons(queryEl: Document | HTMLElement = document) {

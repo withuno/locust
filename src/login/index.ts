@@ -1,8 +1,8 @@
 /* eslint-disable prefer-destructuring */
 
-import { fetchFormsWithInputs } from './inputs';
-import { LoginTarget } from './LoginTarget';
-import { revealShySubmitButtons } from './prepare';
+import { findFormsWithInputs } from './login-inputs';
+import { LoginTarget } from './login-target';
+import { revealShySubmitButtons } from './reveal-shy-submit-buttons';
 
 /**
  * Get the best login target on the current page.
@@ -39,7 +39,7 @@ export function getLoginTarget(queryEl: Document | HTMLElement = document) {
  */
 export function getLoginTargets(queryEl: Document | HTMLElement = document) {
   revealShySubmitButtons(queryEl);
-  return fetchFormsWithInputs(queryEl).map((info) => {
+  return findFormsWithInputs(queryEl).map((info) => {
     const { form, usernameFields, passwordFields, submitButtons } = info;
     const target = new LoginTarget();
     target.usernameField = usernameFields[0];
