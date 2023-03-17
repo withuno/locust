@@ -1,0 +1,12 @@
+{
+  "plugins": [
+    "npm",
+    "all-contributors",
+    "first-time-contributor",
+    "released"
+  ],
+  "owner": "withuno",
+  "repo": "locust",
+  "name": "Uno Team",
+  "email": "builds@uno.app"
+}
