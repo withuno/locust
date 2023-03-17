@@ -17,9 +17,13 @@ jobs:
           args: install
       - name: Run unit tests
         uses: mujo-code/puppeteer-headful@16.6.0
+        env:
+          CI: "true"
         with:
-          run: npm run test:unit
+          args: npm test:unit
       - name: Run integration tests
         uses: mujo-code/puppeteer-headful@16.6.0
+        env:
+          CI: "true"
         with:
-          run: npm run test:integration
+          args: npm test:integration
