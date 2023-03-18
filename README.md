@@ -39,22 +39,19 @@ Locust login targets will emit events when certain things happen. To listen for 
 
 ```ts
 const target = getLoginTarget();
-target.on("valueChanged", info => {
-    if (info.type === "username") {
-        console.log("New username:", info.value);
+target.events.on("valueChanged", ({ type, value }) => {
+    if (type === "username") {
+        console.log("New username:", value);
     }
 });
 // `type` can be "username" or "password"
 ```
 
-> **Note**
-> Login targets inherit from [`EventEmitter`](https://github.com/primus/eventemitter3), so you can use all other methods provided by their implementation.
-
 You can also listen to form submissions:
 
 ```ts
 const target = getLoginTarget();
-target.once("formSubmitted", ({ source }) => {
+target.events.once("formSubmitted", ({ source }) => {
     // `source` will either be "submitButton" or "form"
 });
 ```
