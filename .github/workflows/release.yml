@@ -14,6 +14,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Fetch Git tags
+        run: git fetch --unshallow --tags
+
       - name: Use Node 16.x
         uses: actions/setup-node@v3
         with:
