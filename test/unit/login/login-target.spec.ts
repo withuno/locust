@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { EventEmitter } from 'eventemitter3';
 import sinon from 'sinon';
 
 import { setInputValue } from '@src/login/login-inputs';
@@ -10,9 +11,7 @@ describe('LoginTarget', function () {
   });
 
   it('implements event emitter methods', function () {
-    expect(this.target).to.have.property('emit').that.is.a('function');
-    expect(this.target).to.have.property('on').that.is.a('function');
-    expect(this.target).to.have.property('once').that.is.a('function');
+    expect(this.target.events).to.be.instanceOf(EventEmitter);
   });
 
   it('fires events when username inputs are updated', function () {
