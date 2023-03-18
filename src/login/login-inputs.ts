@@ -99,10 +99,11 @@ function guessUsernameInput(formEl: HTMLFormElement) {
 
 export function setInputValue(input: HTMLInputElement, value: string) {
   nativeInputValueSetter.call(input, value);
-  const inputEvent = new Event('input', { bubbles: true });
-  input.dispatchEvent(inputEvent);
-  const changeEvent = new Event('change', { bubbles: true });
-  input.dispatchEvent(changeEvent);
+  input.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, cancelable: true }));
+  input.dispatchEvent(new KeyboardEvent('keypress', { bubbles: true, cancelable: true }));
+  input.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true, cancelable: true }));
+  input.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+  input.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
 }
 
 export function sortFormElements<Elements extends HTMLElement[]>(

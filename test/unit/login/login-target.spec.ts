@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { EventEmitter } from 'eventemitter3';
 import sinon from 'sinon';
 
 import { setInputValue } from '@src/login/login-inputs';
@@ -10,15 +11,13 @@ describe('LoginTarget', function () {
   });
 
   it('implements event emitter methods', function () {
-    expect(this.target).to.have.property('emit').that.is.a('function');
-    expect(this.target).to.have.property('on').that.is.a('function');
-    expect(this.target).to.have.property('once').that.is.a('function');
+    expect(this.target.events).to.be.instanceOf(EventEmitter);
   });
 
   it('fires events when username inputs are updated', function () {
     let currentValue = '';
     this.target.usernameField = document.createElement('input');
-    this.target.on('valueChanged', (info) => {
+    this.target.events.on('valueChanged', (info) => {
       if (info.type === 'username') {
         currentValue = info.value;
       }
@@ -29,7 +28,7 @@ describe('LoginTarget', function () {
 
   it('fires events when the submit button is clicked', function () {
     let formSubmitted = 0;
-    this.target.on('formSubmitted', (info) => {
+    this.target.events.on('formSubmitted', (info) => {
       if (info.source === 'submitButton') {
         formSubmitted += 1;
       }
@@ -42,7 +41,7 @@ describe('LoginTarget', function () {
 
   it('fires events when the form is submitted', function () {
     let formSubmitted = 0;
-    this.target.on('formSubmitted', (info) => {
+    this.target.events.on('formSubmitted', (info) => {
       if (info.source === 'form') {
         formSubmitted += 1;
       }
@@ -62,7 +61,7 @@ describe('LoginTarget', function () {
   it('fires events when password inputs are updated', function () {
     let currentValue = '';
     this.target.passwordField = document.createElement('input');
-    this.target.on('valueChanged', (info) => {
+    this.target.events.on('valueChanged', (info) => {
       if (info.type === 'password') {
         currentValue = info.value;
       }

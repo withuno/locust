@@ -26,13 +26,19 @@ interface ChangeListener {
   listener: () => void;
 }
 
+type LoginTargetEventEmitter = EventEmitter<{
+  formSubmitted: (ctx: { source: 'form' | 'submitButton' }) => void;
+  valueChanged: (ctx: { type: 'username' | 'password'; value: string }) => void;
+}>;
+
 /**
  * The LoginTarget class which represents a 'target' for logging in
  * with some credentials
  * @class LoginTarget
  */
-export class LoginTarget extends EventEmitter {
+export class LoginTarget {
   public baseScore = 0;
+  public events = new EventEmitter() as LoginTargetEventEmitter;
 
   private _form: HTMLFormElement | null = null;
   private _usernameField: HTMLInputElement | null = null;
@@ -230,7 +236,7 @@ export class LoginTarget extends EventEmitter {
    * @fires LoginTarget#valueChanged
    * @fires LoginTarget#formSubmitted
    */
-  _listenForUpdates<El extends HTMLElement>(type: LoginTargetType, input: El) {
+  private _listenForUpdates<El extends HTMLElement>(type: LoginTargetType, input: El) {
     if (/username|password|submit|form/.test(type) !== true) {
       throw new Error(`Failed listening for field changes: Unrecognised type: ${type}`);
     }
@@ -247,10 +253,10 @@ export class LoginTarget extends EventEmitter {
     if (type === 'submit' || type === 'form') {
       // Listener function for the submission of the form
       const source = type === 'form' ? 'form' : 'submitButton';
-      handleEvent = () => this.emit('formSubmitted', { source });
+      handleEvent = () => this.events.emit('formSubmitted', { source });
     } else {
       const emit = (value: any) => {
-        this.emit('valueChanged', {
+        this.events.emit('valueChanged', {
           type,
           value,
         });
@@ -275,7 +281,7 @@ export class LoginTarget extends EventEmitter {
    * @returns A promise that resolves once either the delay has
    * expired for the page has begun unloading.
    */
-  _waitForNoUnload() {
+  private _waitForNoUnload() {
     const unloadObserver = getSharedObserver();
     return Promise.race([
       new Promise((resolve) => {
