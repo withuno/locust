@@ -2,6 +2,9 @@
 
 > Login form location utility forked from [`@buttercup/locust`](https://github.com/buttercup/locust).
 
+[![Run Unit & Integration Tests](https://github.com/withuno/locust/actions/workflows/test.yml/badge.svg)](https://github.com/withuno/locust/actions/workflows/test.yml)
+![npm](https://img.shields.io/npm/v/@withuno/locust?color=blue)
+
 ## About
 
 Locust helps find **login forms** by searching the DOM for common login form elements. It processes a page and returns _targets_ which can be used for automating logins.
