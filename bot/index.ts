@@ -17,6 +17,7 @@ async function startServer() {
   const server = fastify();
   server.get('/', () => '[@withuno/locust] Locust Test Bot');
   await server.listen({
+    host: '0.0.0.0',
     port: Number(process.env.PORT ?? 8080),
   });
 }
