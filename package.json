@@ -51,6 +51,7 @@
     "eslint": "~8.36.0",
     "eslint-plugin-unused-imports": "~2.0.0",
     "eventemitter3": "^4.0.7",
+    "fastify": "~4.14.1",
     "husky": "8.0.3",
     "is-visible": "^2.2.0",
     "karma": "^6.4.0",
