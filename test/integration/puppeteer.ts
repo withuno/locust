@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 import type { Page } from 'puppeteer';
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
@@ -45,4 +48,16 @@ export async function waitForPageLoad(page: Page) {
       }),
     ]);
   });
+}
+
+const LOCUST_PATH = path.resolve(__dirname, '../../dist/test/iife/index.js');
+
+/**
+ * Loads the Locust JS script into the given `page`.
+ *
+ * @param page A Puppeteer `Page` instance.
+ */
+export async function loadLocustScript(page: Page) {
+  const locustScript = (await fs.promises.readFile(LOCUST_PATH)).toString();
+  await page.evaluate(locustScript);
 }
