@@ -3,7 +3,7 @@
 > Login form location utility forked from [`@buttercup/locust`](https://github.com/buttercup/locust).
 
 [![Run Unit & Integration Tests](https://github.com/withuno/locust/actions/workflows/test.yml/badge.svg)](https://github.com/withuno/locust/actions/workflows/test.yml)
-![npm](https://img.shields.io/npm/v/@withuno/locust?color=blue)
+[![npm](https://img.shields.io/npm/v/@withuno/locust?color=blue)](https://www.npmjs.com/package/@withuno/locust)
 
 ## About
 
