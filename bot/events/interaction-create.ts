@@ -32,10 +32,11 @@ const interactionCreate: DiscordEvent<Events.InteractionCreate> = {
     }
 
     try {
+      console.log(`Running "${interaction.commandName}"`);
       await cmd.run(interaction);
-    } catch (error) {
-      console.error(`Error executing ${interaction.commandName}`);
-      console.error(error);
+    } catch (err) {
+      console.error(`Error executing "${interaction.commandName}"`);
+      console.error(err);
     }
   },
 };
