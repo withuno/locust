@@ -1,0 +1,19 @@
+name: On-demand Integration Test
+
+on:
+  repository_dispatch:
+    types:
+      - login_test
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Login Test
+      if: github.event.action == "login_test"
+      env:
+        TEST_URL: ${{ github.event.client_payload.url }}
+      run: npm run test:integration $TEST_URL

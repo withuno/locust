@@ -94,3 +94,48 @@ npm run test:integration <url>
 # for example:
 npm run test:integration https://github.com/login
 ```
+
+### VSCode Workspace Setup _(optional)_
+
+#### Recommended Extensions:
+
+- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+
+#### Optimal Settings:
+
+```js
+{
+  // A listing of language IDs which should be validated by ESLint.
+  // NOTE: If not installed, ESLint will show an error.
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // As a performance optimization, we can teach ESLint about the repo
+  // structure to improve speed & accuracy when resolving configs.
+  "eslint.workingDirectories":[
+    { "directory":"./src", "changeProcessCWD": true },
+    { "directory":"./bot", "changeProcessCWD": true },
+    { "directory":"./test", "changeProcessCWD": true },
+  ],
+
+  // ESLint rules that should be executed when computing `codeActionsOnSave`.
+  // You can ignore rules using glob patterns (e.g.: "!@typescript-eslint/no-unsafe-assignment").
+  "eslint.codeActionsOnSave.rules": [
+    "*"
+  ],
+
+  // Code actions to be executed upon save.
+  //
+  // NOTE: To improve performance, code actions
+  // should be "opt-in" on a per-extension basis.
+  "editor.codeActionsOnSave": {
+    "source.fixAll": false,
+    "source.organizeImports": false,
+    "source.fixAll.eslint": true,
+  },
+}
+```

@@ -1,4 +1,4 @@
-name: Release
+name: Release Library
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Create Release
+      - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_REPO_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
