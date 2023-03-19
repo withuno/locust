@@ -3,13 +3,15 @@
 import fs from 'fs';
 import path from 'path';
 
+import fetch from 'node-fetch';
+
 import type { LoginTarget } from '@src/index';
 
-import { forwardPageConsole, initializePuppeteer, Page, waitForPageLoad } from './puppeteer';
+import { initializePuppeteer, Page, waitForPageLoad } from './puppeteer';
 import TESTS from './test-forms.json';
 
 type TestCase = (typeof TESTS)[number];
-const LOCUST_PATH = path.resolve(__dirname, '../dist/iife/index.js');
+const LOCUST_PATH = path.resolve(__dirname, '../../dist/test/iife/index.js');
 
 /**
  * Loads the Locust JS script into the given `page`.
@@ -45,13 +47,13 @@ async function executeTestCase(config: TestCase, page: Page) {
 
   await page.evaluate(function (expectedFields) {
     if (!(window as any).Locust) {
-      throw new Error('No global Locust variable found');
+      throw new Error('No global Locust variable found.');
     }
 
     const target: LoginTarget = (window as any).Locust.getLoginTarget();
 
     if (!target) {
-      throw new Error('No login targets found');
+      throw new Error('No login targets found.');
     }
 
     if (expectedFields && expectedFields.username) {
@@ -75,46 +77,73 @@ async function executeTestCase(config: TestCase, page: Page) {
  * @param url The target URL for this test.
  * @param page A Puppeteer `Page` instance.
  */
-async function executeAdHocTest(url: string, page: Page) {
+async function executeOnDemandTest(url: string, page: Page) {
   await page.goto(url);
   await loadLocustScript(page);
 
   await waitForPageLoad(page);
 
-  await page.evaluate(function () {
+  type FoundTargets = {
+    username: boolean;
+    password: boolean;
+    submit: boolean;
+  };
+
+  const foundTargets = await page.evaluate(function () {
     if (!(window as any).Locust) {
-      throw new Error('No global Locust variable found');
+      throw new Error('No global Locust variable found.');
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<FoundTargets>((resolve, reject) => {
       // Check once per second for login targets on the page.
       const interval = setInterval(() => {
         const target = (window as any).Locust.getLoginTarget();
 
         if (!target) {
-          return; // we'll try again next internal
+          return; // we'll try again next interval
         }
+
+        const foundTargets: FoundTargets = {
+          username: false,
+          password: false,
+          submit: false,
+        };
 
         if (target.usernameField) {
-          console.log(`[__uno_locust__]  - found username field`);
+          foundTargets.username = true;
         }
         if (target.passwordField) {
-          console.log(`[__uno_locust__]  - found password field`);
+          foundTargets.password = true;
         }
         if (target.submitButton) {
-          console.log(`[__uno_locust__]  - found submit button`);
+          foundTargets.submit = true;
         }
 
-        resolve(true);
+        resolve(foundTargets);
       }, 1000);
 
       // If no login targets are found after 15s, we give up.
       setTimeout(() => {
         clearInterval(interval);
-        reject(new Error('No login targets found'));
+        reject(new Error('No login targets found.'));
       }, 15000);
     });
   });
+
+  return foundTargets;
+}
+
+function validateURL(urlParam: string | null) {
+  try {
+    if (!urlParam) {
+      return false;
+    }
+    // eslint-disable-next-line no-new
+    new URL(urlParam);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -127,15 +156,39 @@ async function main() {
   const browser = await initializePuppeteer();
   const page = await browser.newPage();
   await page.setBypassCSP(true);
-  forwardPageConsole(page);
 
   try {
     if (url) {
-      console.log(`\n□ Testing: ${url}`);
-      await executeAdHocTest(url, page);
-      console.log(`■ Test complete.`);
+      if (!validateURL(url)) {
+        console.log();
+        throw new Error(`Invalid URL: ${url}`);
+      }
+
+      // Run an on-demand test if `url` parameter was received...
+      console.log(`\n◌ Testing: ${url}`);
+      const foundTargets = await executeOnDemandTest(url, page);
+      Object.entries(foundTargets).forEach(([target, found]) => {
+        console.log(`  ${found ? '✔' : '✖'} ${target}`);
+      });
+      console.log(`◉ Test complete.`);
+
+      if (process.env.DISCORD_WEBHOOK) {
+        const content = [
+          `Results for: \`${url}\``,
+          ...Object.entries(foundTargets).map(([target, found]) => {
+            return `\`${found ? '✔︎' : '✗'} ${target}\``;
+          }),
+        ].join(`\n`);
+
+        await fetch(process.env.DISCORD_WEBHOOK, {
+          method: `POST`,
+          headers: { 'Content-Type': `application/json` },
+          body: JSON.stringify({ content }),
+        });
+      }
     } else {
-      console.log(`\n□ Running ${TESTS.length} integration tests:`);
+      // Otherwise, run the full pre-defined integration test suite...
+      console.log(`\n◌ Running ${TESTS.length} integration tests:`);
       try {
         for (const test of TESTS) {
           console.log(`  - Testing: ${test.name}`);
@@ -143,9 +196,9 @@ async function main() {
           await executeTestCase(test, page);
         }
       } catch (err) {
-        console.error(`  × Failure: ${err}`);
+        console.error(`  ✖ Failure: ${err}`);
       }
-      console.log(`■ Tests complete.`);
+      console.log(`◉ Tests complete.`);
     }
   } finally {
     await browser.close();
