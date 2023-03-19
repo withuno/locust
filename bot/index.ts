@@ -12,11 +12,11 @@ import { DiscordEvent } from './interfaces';
 async function main() {
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-  const eventsPath = path.join(__dirname, './events');
+  const eventsPath = path.resolve(__dirname, './events');
   const eventFiles = await fs.promises.readdir(eventsPath);
   const events: DiscordEvent[] = eventFiles
     .map((filepath) => {
-      return require(filepath).default;
+      return require(path.join(eventsPath, filepath))?.default;
     })
     .filter(Boolean);
 
@@ -28,7 +28,7 @@ async function main() {
     }
   }
 
-  await client.login(process.env.DISCORD_BOT_TOKEN);
+  await client.login(process.env.DISCORD_TOKEN);
 }
 
 main().catch((err) => {

@@ -14,11 +14,11 @@ const interactionCreate: DiscordEvent<Events.InteractionCreate> = {
   async run(interaction) {
     if (!interaction.isChatInputCommand()) return;
 
-    const commandsPath = path.join(__dirname, 'commands');
+    const commandsPath = path.resolve(__dirname, '../commands');
     const commandFiles = await fs.promises.readdir(commandsPath);
     const commands: SlashCommand[] = commandFiles
       .map((filepath) => {
-        return require(filepath).default;
+        return require(path.join(commandsPath, filepath))?.default;
       })
       .filter(Boolean);
 

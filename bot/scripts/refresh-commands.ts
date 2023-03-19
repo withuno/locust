@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
+
 import fs from 'fs';
 import path from 'path';
 
@@ -6,24 +10,26 @@ import { REST, RESTPostAPIChatInputApplicationCommandsJSONBody, Routes } from 'd
 import { SlashCommand } from '../interfaces';
 
 async function main() {
-  const commands: Array<RESTPostAPIChatInputApplicationCommandsJSONBody> = [];
-  const commandsPath = path.join(__dirname, 'commands');
-  const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.js'));
+  const commandsPath = path.resolve(__dirname, '../commands');
+  const commandFiles = await fs.promises.readdir(commandsPath);
+  const commands: SlashCommand[] = commandFiles
+    .map((filepath) => {
+      return require(path.join(commandsPath, filepath))?.default;
+    })
+    .filter(Boolean);
 
-  for (const file of commandFiles) {
-    // eslint-disable-next-line no-await-in-loop
-    const command = (await import(`../commands/${file}`)).default as SlashCommand;
-    commands.push(command.slash.toJSON());
-  }
-
-  console.log(`Started refreshing ${commands.length} application (/) commands.`);
-
-  const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN!);
-  const data: any = await rest.put(Routes.applicationCommands(process.env.DISCORD_BOT_CLIENT_ID!), {
-    body: commands,
+  const commandData: Array<RESTPostAPIChatInputApplicationCommandsJSONBody> = commands.map((cmd) => {
+    return cmd.slash.toJSON();
   });
 
-  console.log(`Successfully refreshed ${data.length} application (/) commands.`);
+  console.log(`◌ Refreshing ${commands.length} application command(s)...`);
+
+  const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
+  const data: any = await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID!), {
+    body: commandData,
+  });
+
+  console.log(`◉ Refreshed ${data.length} application command(s)`);
 }
 
 main().catch((err) => {

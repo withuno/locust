@@ -19,9 +19,9 @@ function validateURL(urlParam: string | null) {
 
 const login: SlashCommand = {
   slash: new SlashCommandBuilder()
-    .setName('login')
+    .setName('test_login_form')
     .setDescription('Test login form detections against a target URL.')
-    .addUserOption((option) => {
+    .addStringOption((option) => {
       return option.setName('url').setDescription('The URL to test.').setRequired(true);
     }),
 
@@ -31,22 +31,22 @@ const login: SlashCommand = {
       const isValidURL = validateURL(url);
 
       if (isValidURL) {
-        await fetch('https://api.github.com/repos/withuno/locust/dispatches', {
-          method: 'POST',
-          body: JSON.stringify({
-            event_type: 'login_test',
-            client_payload: { url },
-          }),
-          headers: {
-            Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-            Accept: 'application/vnd.github+json',
-            'Content-Type': 'application/json',
-            'X-GitHub-Api-Version': '2022-11-28',
-          },
-        });
+        // await fetch('https://api.github.com/repos/withuno/locust/dispatches', {
+        //   method: 'POST',
+        //   body: JSON.stringify({
+        //     event_type: 'test_login_form',
+        //     client_payload: { url },
+        //   }),
+        //   headers: {
+        //     Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+        //     Accept: 'application/vnd.github+json',
+        //     'Content-Type': 'application/json',
+        //     'X-GitHub-Api-Version': '2022-11-28',
+        //   },
+        // });
 
         interaction.reply({
-          content: `Testing login element detections for: \`${url}\``,
+          content: `Testing login element detections for: \`${url}\`\n\n⏱️ This might take a minute...`,
         });
       } else {
         interaction.reply({
