@@ -3,6 +3,8 @@
 import fs from 'fs';
 import path from 'path';
 
+import fetch from 'node-fetch';
+
 import type { LoginTarget } from '@src/index';
 
 import { initializePuppeteer, Page, waitForPageLoad } from './puppeteer';
@@ -131,6 +133,19 @@ async function executeOnDemandTest(url: string, page: Page) {
   return foundTargets;
 }
 
+function validateURL(urlParam: string | null) {
+  try {
+    if (!urlParam) {
+      return false;
+    }
+    // eslint-disable-next-line no-new
+    new URL(urlParam);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Run the integration test suite or a single, arbitrary
  * test based on the given command-line arguments.
@@ -144,6 +159,11 @@ async function main() {
 
   try {
     if (url) {
+      if (!validateURL(url)) {
+        console.log();
+        throw new Error(`Invalid URL: ${url}`);
+      }
+
       // Run an on-demand test if `url` parameter was received...
       console.log(`\n◌ Testing: ${url}`);
       const foundTargets = await executeOnDemandTest(url, page);
@@ -151,6 +171,21 @@ async function main() {
         console.log(`  ${found ? '✔' : '✖'} ${target}`);
       });
       console.log(`◉ Test complete.`);
+
+      if (process.env.DISCORD_WEBHOOK) {
+        const content = [
+          `Results for: \`${url}\``,
+          ...Object.entries(foundTargets).map(([target, found]) => {
+            return `\`${found ? '✔︎' : '✗'} ${target}\``;
+          }),
+        ].join(`\n`);
+
+        await fetch(process.env.DISCORD_WEBHOOK, {
+          method: `POST`,
+          headers: { 'Content-Type': `application/json` },
+          body: JSON.stringify({ content }),
+        });
+      }
     } else {
       // Otherwise, run the full pre-defined integration test suite...
       console.log(`\n◌ Running ${TESTS.length} integration tests:`);

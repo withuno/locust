@@ -56,6 +56,8 @@ target.events.once("formSubmitted", ({ source }) => {
 });
 ```
 
+---
+
 ## Development
 
 ### Environment Setup
@@ -86,7 +88,7 @@ npm run test:unit
 npm run test:integration
 ```
 
-**Ad-hoc integration test:**
+**On-demand integration test:**
 
 ```zsh
 npm run test:integration <url>
