@@ -58,6 +58,12 @@ async function executeTestCase(config: TestCase, page: Page) {
         throw new Error(`No password field found matching query: ${expectedFields.password}`);
       }
     }
+    if (expectedFields && expectedFields.submit) {
+      const submitButton = document.querySelector(expectedFields.submit);
+      if (target.submitButton !== submitButton) {
+        throw new Error(`No submit button found matching query: ${expectedFields.submit}`);
+      }
+    }
   }, expectedFields);
 }
 

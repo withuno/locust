@@ -52,5 +52,14 @@
       "username": "#memberName",
       "password": "#password"
     }
+  },
+  {
+    "name": "instructure (pgcps)",
+    "url": "https://pgcps.instructure.com/",
+    "expectedFields": {
+      "username": "#userNameInput",
+      "password": "#passwordInput",
+      "submit": "#submitButton"
+    }
   }
 ]

@@ -36,7 +36,9 @@ const FORM_ELEMENT_SCORING = {
     { test: /(name|id|title)="(login|log[ _-]in|signin|sign[ _-]in)"/i, value: 10 },
     { test: /<input.+data-uno-haslogintext="yes"/, value: 8 },
     { test: /<button.+data-uno-haslogintext="yes"/, value: 8 },
-    { test: /<a .*data-uno-haslogintext="yes"/, value: 2 },
+    { test: /<a .*data-uno-haslogintext="yes"/, value: 3 },
+    { test: /<div .+data-uno-haslogintext="yes"/, value: 2 },
+    { test: /<span .+data-uno-haslogintext="yes"/, value: 2 },
   ],
 };
 

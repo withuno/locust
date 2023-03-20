@@ -7,7 +7,7 @@ const REGULAR_BUTTONS = ['button', 'a'];
 
 export function revealShySubmitButtons(queryEl: Document | HTMLElement = document) {
   const query = [...SUBMIT_BUTTON_QUERIES, ...REGULAR_BUTTONS].join(',');
-  const buttons = Array.prototype.slice.call(queryEl.querySelectorAll(query));
+  const buttons = [...queryEl.querySelectorAll(query)];
   buttons
     .filter((button) => button.hasAttribute(LOGIN_BUTTON_ATTR) === false)
     .forEach((button) => {
