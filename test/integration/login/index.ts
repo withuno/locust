@@ -37,13 +37,13 @@ async function executeTestCase(config: TestCase, page: Page) {
 
   await page.evaluate(function (expectedFields) {
     if (!(window as any).Locust) {
-      throw new Error('No global Locust variable found.');
+      throw new Error('No global Locust variable found');
     }
 
     const target: LoginTarget = (window as any).Locust.getLoginTarget();
 
     if (!target) {
-      throw new Error('No login targets found.');
+      throw new Error('No login targets found');
     }
 
     if (expectedFields && expectedFields.username) {
@@ -81,7 +81,7 @@ async function executeOnDemandTest(url: string, page: Page) {
 
   const foundTargets = await page.evaluate(function () {
     if (!(window as any).Locust) {
-      throw new Error('No global Locust variable found.');
+      throw new Error('No global Locust variable found');
     }
 
     return new Promise<FoundTargets>((resolve, reject) => {
@@ -115,7 +115,7 @@ async function executeOnDemandTest(url: string, page: Page) {
       // If no login targets are found after 15s, we give up.
       setTimeout(() => {
         clearInterval(interval);
-        reject(new Error('No login targets found.'));
+        reject(new Error('No login targets found after 15s'));
       }, 15000);
     });
   });
@@ -162,33 +162,60 @@ export const loginCommand = createCommand(
     });
 
     if (data.url) {
-      // Run an on-demand test if `url` parameter was received...
-      console.log(`\n◌ Testing: ${data.url}`);
-      const foundTargets = await executeOnDemandTest(data.url, page);
-      Object.entries(foundTargets).forEach(([target, found]) => {
-        console.log(`  ${found ? '✔' : '✖'} ${target}`);
-      });
-      console.log(`◉ Test complete.`);
+      try {
+        // Run an on-demand test if `url` parameter was received...
+        console.log(`\n◌ Testing: ${data.url}`);
+        const foundTargets = await executeOnDemandTest(data.url, page);
+        Object.entries(foundTargets).forEach(([target, found]) => {
+          console.log(`  ${found ? '✔' : '✖'} ${target}`);
+        });
 
-      if (process.env.DISCORD_WEBHOOK) {
-        try {
-          const content = [
-            `Results for: \`${data.url}\``,
-            ...Object.entries(foundTargets).map(([target, found]) => {
-              return `\`${found ? '✔︎' : '✗'} ${target}\``;
-            }),
-          ].join(`\n`);
+        // Post a message with the results to Uno's
+        // element-detection triage channel.
+        if (process.env.DISCORD_WEBHOOK) {
+          try {
+            const content = [
+              `Results for: **\`${data.url}\`**`,
+              ...Object.entries(foundTargets).map(([target, found]) => {
+                return `\`${found ? '✔︎' : '✗'} ${target}\``;
+              }),
+            ].join(`\n`);
 
-          await fetch(process.env.DISCORD_WEBHOOK, {
-            method: `POST`,
-            headers: { 'Content-Type': `application/json` },
-            body: JSON.stringify({ content }),
-          });
-        } catch {
-          // Not the end of the world if the
-          // Discord hook fails for some reason...
+            await fetch(process.env.DISCORD_WEBHOOK, {
+              method: `POST`,
+              headers: { 'Content-Type': `application/json` },
+              body: JSON.stringify({ content }),
+            });
+          } catch {
+            // Not the end of the world if the Discord hook fails...
+          }
+        }
+      } catch (err) {
+        console.error(`  ✖ Failure: ${err}`);
+
+        // Post a message with info about test failure
+        // to Uno's element-detection triage channel.
+        if (process.env.DISCORD_WEBHOOK) {
+          try {
+            const content = [
+              `Results for: **\`${data.url}\`**`,
+              `\`✖ Test failed:\``,
+              `\`\`\``,
+              `${err.message}`,
+              `\`\`\``,
+            ].join(`\n`);
+
+            await fetch(process.env.DISCORD_WEBHOOK, {
+              method: `POST`,
+              headers: { 'Content-Type': `application/json` },
+              body: JSON.stringify({ content }),
+            });
+          } catch {
+            // Not the end of the world if the Discord hook fails...
+          }
         }
       }
+      console.log(`◉ Test complete.`);
     } else {
       // Otherwise, run the full pre-defined integration test suite...
       console.log(`\n◌ Running ${FIXTURES.length} integration tests:`);
