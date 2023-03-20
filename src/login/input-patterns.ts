@@ -26,6 +26,7 @@ export const SUBMIT_BUTTON_QUERIES = [
   "button[title*='sign in' i]",
   "button[title*='sign-in' i]",
   'div[role=button]',
+  'span[role=button]',
   '[data-uno-haslogintext=yes]',
 ];
 

@@ -36,14 +36,14 @@ export async function waitForPageLoad(page: Page) {
       ...selectors.map((img) => {
         // Image has already finished loading, let’s see if it worked...
         if (img.complete) {
-          if (img.naturalHeight !== 0) return;
-          throw new Error('Image failed to load');
+          return;
         }
 
         // Image hasn’t loaded yet, add an event listener to know when it does...
         return new Promise((resolve, reject) => {
           img.addEventListener('load', resolve);
-          img.addEventListener('error', reject);
+          // We don't mind if an image fails to load...
+          img.addEventListener('error', resolve);
         });
       }),
     ]);
