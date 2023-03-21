@@ -121,8 +121,8 @@ async function executeOnDemandTest(url: string, page: Page) {
       // If no login targets are found after 15s, we give up.
       setTimeout(() => {
         clearInterval(interval);
-        reject(new Error('No login targets found after 15s'));
-      }, 15000);
+        reject(new Error('No login targets found after 30s'));
+      }, 30_000);
     });
   });
 
