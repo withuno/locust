@@ -21,7 +21,6 @@ export function getVisibleLoginTarget(queryEl: Document | HTMLElement = document
     bestTarget?.passwordField,
     bestTarget?.submitButton,
   ].some((el) => {
-    console.log('isVisible', !!el && isVisible(el), el);
     return !!el && isVisible(el);
   });
   return isTargetVisible ? bestTarget : null;
