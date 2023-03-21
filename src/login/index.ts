@@ -2,9 +2,8 @@
 
 import isVisible from 'is-visible';
 
-import { findFormsWithInputs } from './login-inputs';
 import { LoginTarget } from './login-target';
-import { revealShySubmitButtons } from './reveal-shy-submit-buttons';
+import { findFormsWithInputs } from './resolvers';
 
 /**
  * Get the best login (visible) target on the current page.
@@ -34,7 +33,6 @@ export function getVisibleLoginTarget(queryEl: Document | HTMLElement = document
  * @see getLoginTargets
  */
 export function getLoginTarget(queryEl: Document | HTMLElement = document) {
-  revealShySubmitButtons(queryEl);
   const targets = getLoginTargets(queryEl);
   let bestScore = -1;
   let bestTarget = null;
@@ -60,13 +58,12 @@ export function getLoginTarget(queryEl: Document | HTMLElement = document) {
  * @returns An array of login targets.
  */
 export function getLoginTargets(queryEl: Document | HTMLElement = document) {
-  revealShySubmitButtons(queryEl);
   return findFormsWithInputs(queryEl).map((info) => {
     const { form, usernameFields, passwordFields, submitButtons } = info;
     const target = new LoginTarget();
-    target.usernameField = usernameFields[0];
-    target.passwordField = passwordFields[0];
-    target.submitButton = submitButtons[0];
+    target.usernameField = usernameFields[0] ?? null;
+    target.passwordField = passwordFields[0] ?? null;
+    target.submitButton = submitButtons[0] ?? null;
     target.form = form;
     if (submitButtons.length > 1) {
       target.baseScore -= 2;

@@ -1,14 +1,13 @@
 import EventEmitter from 'eventemitter3';
 import { isVisible } from 'is-visible';
 
-import { setInputValue } from './login-inputs';
-import { getSharedObserver } from '../unload-observer';
+import { setInputValue } from '../utils/dom';
 
-export const FORCE_SUBMIT_DELAY = 7500;
+const FORCE_SUBMIT_DELAY = 7500;
 
-export type LoginTargetType = 'form' | 'submit' | 'username' | 'password';
+export type LoginTargetFieldType = 'form' | 'submit' | 'username' | 'password';
 
-function getEventListenerForElement(type: LoginTargetType) {
+function getChangeEventNameForFieldType(type: LoginTargetFieldType) {
   switch (type) {
     case 'form':
       return 'submit';
@@ -33,8 +32,7 @@ type LoginTargetEventEmitter = EventEmitter<{
 
 /**
  * The LoginTarget class which represents a 'target' for logging in
- * with some credentials
- * @class LoginTarget
+ * with some credentials.
  */
 export class LoginTarget {
   public baseScore = 0;
@@ -45,7 +43,7 @@ export class LoginTarget {
   private _passwordField: HTMLInputElement | null = null;
   private _submitButton: HTMLElement | null = null;
   private _forceSubmitDelay: number = FORCE_SUBMIT_DELAY;
-  private _changeListeners: Record<LoginTargetType, ChangeListener | null> = {
+  private _changeListeners: Record<LoginTargetFieldType, ChangeListener | null> = {
     username: null,
     password: null,
     submit: null,
@@ -124,6 +122,7 @@ export class LoginTarget {
    */
   calculateScore() {
     let score = this.baseScore;
+    score += this.form ? 10 : 0;
     score += this.usernameField ? 10 : 0;
     score += this.passwordField ? 10 : 0;
     score += this.submitButton ? 10 : 0;
@@ -151,14 +150,11 @@ export class LoginTarget {
    * Fill password into the password field.
    *
    * @param password The password to enter.
-   *
-   * @returns A promise that resolves once the data has been entered.
    */
   fillPassword(password: string) {
     if (this.passwordField) {
       setInputValue(this.passwordField, password);
     }
-    return Promise.resolve();
   }
 
   /**
@@ -167,15 +163,14 @@ export class LoginTarget {
    * @param username The username to enter
    * @param password The password to enter
    *
-   * @returns A promise that resolves once the data has been entered
-   *
    * @example
    * ```ts
    * loginTarget.enterDetails("myUsername", "myPassword");
    * ```
    */
   enterDetails(username: string, password: string) {
-    return Promise.all([this.fillUsername(username), this.fillPassword(password)]);
+    this.fillUsername(username);
+    this.fillPassword(password);
   }
 
   /**
@@ -191,19 +186,15 @@ export class LoginTarget {
    *
    * @param username The username to login with.
    * @param password The password to login with.
-   * @param force Whether or not to force the login (defaults to false).
-   *
-   * @returns A promise that resolves once the login procedure has
-   * completed. Let's be honest: there's probably no point to listen to the
-   * return value of this function.
    *
    * @example
    * ```ts
    * loginTarget.login("myUsername", "myPassword");
    * ```
    */
-  login(username: string, password: string, force = false) {
-    return this.enterDetails(username, password).then(() => this.submit(force));
+  login(username: string, password: string) {
+    this.enterDetails(username, password);
+    this.submit();
   }
 
   /**
@@ -211,18 +202,14 @@ export class LoginTarget {
    *
    * You probably don't want this function. `login` or `enterDetails` are way
    * better.
-   *
-   * @param force Force the submission (defaults to false).
    */
-  submit(force = false) {
+  submit() {
     if (!this.submitButton) {
       // No button, just try submitting
-      this.form?.submit();
-      return Promise.resolve();
+      this.form?.submit?.();
     }
     // Click button
-    this.submitButton.click();
-    return force ? this._waitForNoUnload() : Promise.resolve();
+    this.submitButton?.click?.();
   }
 
   /**
@@ -230,79 +217,60 @@ export class LoginTarget {
    * Attaches listeners for username/password input changes and emits an event
    * when a change is detected.
    *
-   * @param type The type of input (username/password).
+   * @param type The type of field (username/password/form/submit).
    * @param input The target element.
    *
-   * @fires LoginTarget#valueChanged
-   * @fires LoginTarget#formSubmitted
+   * @fires valueChanged
+   * @fires formSubmitted
    */
-  private _listenForUpdates<El extends HTMLElement>(type: LoginTargetType, input: El) {
-    if (/username|password|submit|form/.test(type) !== true) {
-      throw new Error(`Failed listening for field changes: Unrecognised type: ${type}`);
-    }
-    // Detect the necessary event listener name
-    const eventListenerName = getEventListenerForElement(type);
+  private _listenForUpdates<El extends HTMLElement>(type: LoginTargetFieldType, input: El) {
+    // Detect the proper event name
+    const eventListenerName = getChangeEventNameForFieldType(type);
+
     // Check if a listener exists already, and clear it if it does
     if (this._changeListeners[type]) {
       // eslint-disable-next-line @typescript-eslint/no-shadow
       const { input, listener } = this._changeListeners[type]!;
       input.removeEventListener(eventListenerName, listener, false);
     }
+
     // Emit a value change event
     let handleEvent;
-    if (type === 'submit' || type === 'form') {
-      // Listener function for the submission of the form
-      const source = type === 'form' ? 'form' : 'submitButton';
-      handleEvent = () => this.events.emit('formSubmitted', { source });
-    } else {
-      const emit = (value: any) => {
-        this.events.emit('valueChanged', {
-          type,
-          value,
-        });
-      };
-      // Listener function for the input element
-      handleEvent = function (this: HTMLInputElement) {
-        emit(this.value);
-      };
+
+    switch (type) {
+      case 'form':
+      case 'submit': {
+        // Listener function for the submission of the form
+        const source = type === 'form' ? 'form' : 'submitButton';
+        handleEvent = () => this.events.emit('formSubmitted', { source });
+        break;
+      }
+
+      case 'username':
+      case 'password':
+      default:
+        {
+          const emit = (value: any) => {
+            this.events.emit('valueChanged', {
+              type,
+              value,
+            });
+          };
+          // Listener function for the input element
+          handleEvent = function (this: HTMLInputElement) {
+            emit(this.value);
+          };
+        }
+        break;
     }
+
     // Store the listener information
     this._changeListeners[type] = {
       input,
       listener: handleEvent,
     };
+
     // Attach the listener
     input.addEventListener(eventListenerName, handleEvent, false);
-  }
-
-  /**
-   * Wait for either the unload event to fire or the delay to time out.
-   *
-   * @returns A promise that resolves once either the delay has
-   * expired for the page has begun unloading.
-   */
-  private _waitForNoUnload() {
-    const unloadObserver = getSharedObserver();
-    return Promise.race([
-      new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(false);
-        }, this.forceSubmitDelay);
-      }),
-      new Promise((resolve) => {
-        if (unloadObserver.willUnload) {
-          resolve(true);
-          return;
-        }
-        unloadObserver.once('unloading', () => {
-          resolve(true);
-        });
-      }),
-    ]).then((hasUnloaded) => {
-      if (!hasUnloaded) {
-        // No unload events detected, so we need for force submit
-        this.form?.submit();
-      }
-    });
   }
 }

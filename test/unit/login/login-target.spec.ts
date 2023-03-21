@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import { EventEmitter } from 'eventemitter3';
 import sinon from 'sinon';
 
-import { setInputValue } from '@src/login/login-inputs';
 import { LoginTarget } from '@src/login/login-target';
+import { setInputValue } from '@src/utils/dom';
 
 describe('LoginTarget', function () {
   beforeEach(function () {
@@ -47,6 +47,7 @@ describe('LoginTarget', function () {
       }
     });
     const fakeForm = {
+      tagName: 'form',
       addEventListener: sinon.spy(),
     };
     this.target.form = fakeForm;
@@ -114,16 +115,14 @@ describe('LoginTarget', function () {
     });
 
     it('sets the values of the inputs', function () {
-      return this.target.login('myUsername', 'myPassword').then(() => {
-        expect(this.username.value).to.equal('myUsername');
-        expect(this.password.value).to.equal('myPassword');
-      });
+      this.target.login('myUsername', 'myPassword');
+      expect(this.username.value).to.equal('myUsername');
+      expect(this.password.value).to.equal('myPassword');
     });
 
     it('submits the form', function () {
-      return this.target.login('myUsername', 'myPassword').then(() => {
-        expect(this.target.submit.calledOnce).to.be.true;
-      });
+      this.target.login('myUsername', 'myPassword');
+      expect(this.target.submit.calledOnce).to.be.true;
     });
   });
 
@@ -134,9 +133,8 @@ describe('LoginTarget', function () {
     });
 
     it('clicks the submit button', function () {
-      return this.target.submit().then(() => {
-        expect(this.submitButton.click.calledOnce).to.be.true;
-      });
+      this.target.submit();
+      expect(this.submitButton.click.calledOnce).to.be.true;
     });
   });
 });
