@@ -1,3 +1,15 @@
+# v0.4.3 (Tue Mar 21 2023)
+
+#### 🐛 Bug Fix
+
+- Remove unreliable `guessUsernameInput` function [#16](https://github.com/withuno/locust/pull/16) ([@smithki](https://github.com/smithki))
+
+#### Authors: 1
+
+- Ian K Smith ([@smithki](https://github.com/smithki))
+
+---
+
 # v0.4.2 (Tue Mar 21 2023)
 
 #### 🐛 Bug Fix
