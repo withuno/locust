@@ -54,12 +54,19 @@
     }
   },
   {
-    "name": "instructure (pgcps)",
+    "name": "Instructure (pgcps)",
     "url": "https://pgcps.instructure.com/",
     "expectedFields": {
       "username": "#userNameInput",
       "password": "#passwordInput",
       "submit": "#submitButton"
+    }
+  },
+  {
+    "name": "Twitter",
+    "url": "https://twitter.com/i/flow/login",
+    "expectedFields": {
+      "username": "input[autocomplete=username]"
     }
   }
 ]

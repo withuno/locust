@@ -119,14 +119,6 @@ npm run test:integration https://github.com/login
     "typescriptreact"
   ],
 
-  // As a performance optimization, we can teach ESLint about the repo
-  // structure to improve speed & accuracy when resolving configs.
-  "eslint.workingDirectories":[
-    { "directory":"./src", "changeProcessCWD": true },
-    { "directory":"./bot", "changeProcessCWD": true },
-    { "directory":"./test", "changeProcessCWD": true },
-  ],
-
   // ESLint rules that should be executed when computing `codeActionsOnSave`.
   // You can ignore rules using glob patterns (e.g.: "!@typescript-eslint/no-unsafe-assignment").
   "eslint.codeActionsOnSave.rules": [
