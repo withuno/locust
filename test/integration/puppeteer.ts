@@ -40,7 +40,7 @@ export async function waitForPageLoad(page: Page) {
         }
 
         // Image hasn’t loaded yet, add an event listener to know when it does...
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           img.addEventListener('load', resolve);
           // We don't mind if an image fails to load...
           img.addEventListener('error', resolve);

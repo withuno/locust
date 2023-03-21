@@ -1,8 +1,31 @@
 /* eslint-disable prefer-destructuring */
 
+import isVisible from 'is-visible';
+
 import { findFormsWithInputs } from './login-inputs';
 import { LoginTarget } from './login-target';
 import { revealShySubmitButtons } from './reveal-shy-submit-buttons';
+
+/**
+ * Get the best login (visible) target on the current page.
+ *
+ * @param queryEl The element to query within
+ * @returns A login target or `null` if none found
+ * @see getLoginTarget
+ */
+export function getVisibleLoginTarget(queryEl: Document | HTMLElement = document) {
+  const bestTarget = getLoginTarget(queryEl);
+  const isTargetVisible = [
+    bestTarget?.form,
+    bestTarget?.usernameField,
+    bestTarget?.passwordField,
+    bestTarget?.submitButton,
+  ].some((el) => {
+    console.log('isVisible', !!el && isVisible(el), el);
+    return !!el && isVisible(el);
+  });
+  return isTargetVisible ? bestTarget : null;
+}
 
 /**
  * Get the best login target on the current page.
