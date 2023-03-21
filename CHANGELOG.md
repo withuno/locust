@@ -1,3 +1,15 @@
+# v0.4.1 (Tue Mar 21 2023)
+
+#### ⚠️ Pushed to `main`
+
+- remove console statement ([@smithki](https://github.com/smithki))
+
+#### Authors: 1
+
+- Ian K Smith ([@smithki](https://github.com/smithki))
+
+---
+
 # v0.4.0 (Tue Mar 21 2023)
 
 #### 🚀 Enhancement
