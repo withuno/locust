@@ -1,3 +1,15 @@
+# v0.4.2 (Tue Mar 21 2023)
+
+#### 🐛 Bug Fix
+
+- Better username heuristics (to support Twitter) [#15](https://github.com/withuno/locust/pull/15) ([@smithki](https://github.com/smithki))
+
+#### Authors: 1
+
+- Ian K Smith ([@smithki](https://github.com/smithki))
+
+---
+
 # v0.4.1 (Tue Mar 21 2023)
 
 #### ⚠️ Pushed to `main`
