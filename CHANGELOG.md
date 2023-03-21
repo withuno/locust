@@ -1,3 +1,15 @@
+# v0.4.0 (Tue Mar 21 2023)
+
+#### 🚀 Enhancement
+
+- add `getVisibleLoginTarget` function [#14](https://github.com/withuno/locust/pull/14) ([@smithki](https://github.com/smithki))
+
+#### Authors: 1
+
+- Ian K Smith ([@smithki](https://github.com/smithki))
+
+---
+
 # v0.3.0 (Mon Mar 20 2023)
 
 #### 🚀 Enhancement
