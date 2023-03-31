@@ -10,6 +10,11 @@ import fastify from 'fastify';
 
 import { DiscordEvent, SlashCommand } from './interfaces';
 
+const symbols = {
+  wait: '◌',
+  complete: '◉',
+};
+
 /**
  * Start a `fastify` server to provide the app platform with health-checks.
  */
@@ -38,14 +43,14 @@ async function loadSlashCommands() {
     return cmd.slash.toJSON();
   });
 
-  console.log(`◌ Refreshing ${commands.length} application command(s)...`);
+  console.log(`${symbols.wait} Refreshing ${commands.length} application command(s)...`);
 
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN!);
   const data: any = await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID!), {
     body: commandData,
   });
 
-  console.log(`◉ Refreshed ${data.length} application command(s)`);
+  console.log(`${symbols.complete} Refreshed ${data.length} application command(s)`);
 }
 
 /**

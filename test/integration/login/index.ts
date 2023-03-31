@@ -7,7 +7,7 @@ import type { LoginTarget } from '@src/index';
 
 import FIXTURES from './fixtures.json';
 import { initializePuppeteer, loadLocustScript, Page, waitForPageLoad } from '../puppeteer';
-import { isValidUrl } from '../utils';
+import { isValidUrl, symbols } from '../utils';
 
 type TestCase = (typeof FIXTURES)[number];
 
@@ -173,7 +173,7 @@ export const loginCommand = createCommand(
         console.log(`\n◌ Testing: ${data.url}`);
         const foundTargets = await executeOnDemandTest(data.url, page);
         Object.entries(foundTargets).forEach(([target, found]) => {
-          console.log(`  ${found ? '✔' : '✖'} ${target}`);
+          console.log(`  ${found ? '✔' : symbols.x} ${target}`);
         });
 
         // Post a message with the results to Uno's
@@ -183,7 +183,7 @@ export const loginCommand = createCommand(
             const content = [
               `Results for: **\`${data.url}\`**`,
               ...Object.entries(foundTargets).map(([target, found]) => {
-                return `\`${found ? '✔︎' : '✗'} ${target}\``;
+                return `\`${found ? symbols.checkmark : symbols.x} ${target}\``;
               }),
             ].join(`\n`);
 
@@ -192,12 +192,14 @@ export const loginCommand = createCommand(
               headers: { 'Content-Type': `application/json` },
               body: JSON.stringify({ content }),
             });
+
+            console.log(`\n${symbols.checkmark} Posted test results to Discord.`);
           } catch {
             // Not the end of the world if the Discord hook fails...
           }
         }
       } catch (err) {
-        console.error(`  ✖ Failure: ${err}`);
+        console.error(`  ${symbols.x} Failure: ${err}`);
 
         // Post a message with info about test failure
         // to Uno's element-detection triage channel.
@@ -205,7 +207,7 @@ export const loginCommand = createCommand(
           try {
             const content = [
               `Results for: **\`${data.url}\`**`,
-              `\`✖ Test failed:\``,
+              `\`${symbols.x} Test failed:\``,
               `\`\`\``,
               `${err.message}`,
               `\`\`\``,
@@ -216,12 +218,14 @@ export const loginCommand = createCommand(
               headers: { 'Content-Type': `application/json` },
               body: JSON.stringify({ content }),
             });
+
+            console.log(`\n${symbols.checkmark} Posted error trace to Discord.`);
           } catch {
             // Not the end of the world if the Discord hook fails...
           }
         }
       }
-      console.log(`◉ Test complete.`);
+      console.log(`${symbols.complete} Test complete.`);
     } else {
       // Otherwise, run the full pre-defined integration test suite...
       console.log(`\n◌ Running ${FIXTURES.length} integration tests:`);
@@ -232,9 +236,9 @@ export const loginCommand = createCommand(
           await executeTestCase(test, page);
         }
       } catch (err) {
-        console.error(`  ✖ Failure: ${err}`);
+        console.error(`  ${symbols.x} Failure: ${err}`);
       }
-      console.log(`◉ Tests complete.`);
+      console.log(`${symbols.complete} Tests complete.`);
     }
   },
 );
