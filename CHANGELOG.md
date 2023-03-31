@@ -1,3 +1,15 @@
+# v0.4.4 (Fri Mar 31 2023)
+
+#### 🐛 Bug Fix
+
+- Additional logic to cover non-standard label-to-username mappings [#17](https://github.com/withuno/locust/pull/17) ([@smithki](https://github.com/smithki))
+
+#### Authors: 1
+
+- Ian K Smith ([@smithki](https://github.com/smithki))
+
+---
+
 # v0.4.3 (Tue Mar 21 2023)
 
 #### 🐛 Bug Fix
