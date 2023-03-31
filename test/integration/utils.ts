@@ -1,3 +1,10 @@
+export const symbols = {
+  wait: '◌',
+  complete: '◉',
+  checkmark: '✔︎',
+  x: '✗',
+};
+
 export function isValidUrl(urlParam: string | null) {
   try {
     if (!urlParam) {

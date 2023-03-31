@@ -31,8 +31,9 @@ const USERNAMES_OPTIONAL_TEXT = [
 
 export const USERNAME_FIELD_SPEC: FieldSpec<HTMLInputElement> = {
   prepare(root) {
+    const labelAttr = 'data-uno-labelindex';
     const usernameAttr = 'data-uno-hasusernametext';
-    const usernameLabelTextRegExp = /(phone|mobile|username|email)/i;
+    const usernameLabelTextRegExp = /(phone|mobile|username|email|login id|customer id)/i;
 
     const labels = Array.prototype.slice.call(root.querySelectorAll('label')) as HTMLElement[];
 
@@ -41,14 +42,31 @@ export const USERNAME_FIELD_SPEC: FieldSpec<HTMLInputElement> = {
         const text = label.innerText.trim().toLowerCase();
         return usernameLabelTextRegExp.test(text);
       })
-      .forEach((label) => {
+      .forEach((label, i) => {
+        // Uniquely identify the label in case
+        // we need to query for subsequent inputs.
+        label.setAttribute(labelAttr, String(i));
+
+        // 1st case: query for an input identified by `<label for="..."`
         const htmlFor = label.getAttribute('for');
         if (htmlFor) {
           const input = document.getElementById(htmlFor);
           input?.setAttribute(usernameAttr, 'yes');
         } else {
-          const input = label.querySelector('input') as HTMLInputElement;
-          input?.setAttribute(usernameAttr, 'yes');
+          // 2nd case: query for the first input nested within the label
+          const nestedInput = label.querySelector('input') as HTMLInputElement;
+          if (nestedInput) {
+            nestedInput.setAttribute(usernameAttr, 'yes');
+          } else {
+            // 3rd case: query for the first subsequent input adjacent to the label
+            const subsequentInputQueries = [`[${labelAttr}="${i}"] ~ input`, `[${labelAttr}="${i}"] ~ * input`];
+            const subsequentInput = label.parentElement?.querySelector(subsequentInputQueries.join(', '));
+            subsequentInput?.setAttribute(usernameAttr, 'yes');
+
+            // If an input cannot be identified by this point, then the website
+            // developer has really messed up their form and we can't really
+            // help it.
+          }
         }
       });
   },
@@ -119,7 +137,7 @@ export const PASSWORD_FIELD_SPEC: FieldSpec<HTMLInputElement> = {
 
 export const SUBMIT_BUTTON_SPEC: FieldSpec = {
   prepare(root) {
-    const loginButtonAttr = 'data-uno-haslogintext';
+    const loginButtonAttr = 'data-uno-hassubmittext';
     const loginTextRegExp =
       /^(login|log in|log-in|logon|log on|log-on|signin|sign in|sign-in|confirm|enter|next|continue)$/i;
 
@@ -149,17 +167,17 @@ export const SUBMIT_BUTTON_SPEC: FieldSpec = {
       "button[title*='sign-in' i]",
       'div[role=button]',
       'span[role=button]',
-      '[data-uno-haslogintext=yes]',
+      '[data-uno-hassubmittext=yes]',
     ],
 
     sort: [
       { test: /type="submit"/, weight: 5 },
       { test: /(name|id|title)="(login|log[ _-]in|signin|sign[ _-]in)"/i, weight: 10 },
-      { test: /<input.+data-uno-haslogintext="yes"/, weight: 8 },
-      { test: /<button.+data-uno-haslogintext="yes"/, weight: 8 },
-      { test: /<a .*data-uno-haslogintext="yes"/, weight: 3 },
-      { test: /<div .+data-uno-haslogintext="yes"/, weight: 2 },
-      { test: /<span .+data-uno-haslogintext="yes"/, weight: 2 },
+      { test: /<input .+data-uno-hassubmittext="yes"/, weight: 8 },
+      { test: /<button .+data-uno-hassubmittext="yes"/, weight: 8 },
+      { test: /<a .*data-uno-hassubmittext="yes"/, weight: 3 },
+      { test: /<div .+data-uno-hassubmittext="yes"/, weight: 2 },
+      { test: /<span .+data-uno-hassubmittext="yes"/, weight: 2 },
     ],
   },
 };
