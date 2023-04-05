@@ -205,6 +205,7 @@ export class LoginTarget {
    */
   submit() {
     if (!this.submitButton) {
+      console.log('submit', this.form);
       // No button, just try submitting
       this.form?.submit?.();
     }

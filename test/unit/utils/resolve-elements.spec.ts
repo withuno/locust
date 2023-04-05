@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { USERNAME_FIELD_SPEC } from '@src/login/field-specs';
+import { USERNAME_FIELD_SPEC } from '@src/login/fields';
 import { resolveElements } from '@src/utils/resolve-elements';
 
 describe('resolveElements', function () {
@@ -27,7 +27,6 @@ describe('resolveElements', function () {
 
   it('sorts username inputs correctly', function (this: SetFormElementsContext) {
     const sorted = resolveElements(USERNAME_FIELD_SPEC, this.queryEl);
-    console.log('sorted', sorted);
     expect(sorted[0]).to.equal(this.username2);
     expect(sorted[1]).to.equal(this.username1);
   });
