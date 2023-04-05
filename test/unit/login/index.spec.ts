@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { FORM_QUERIES } from '@src/login/field-specs';
-import { findFormsWithInputs } from '@src/login/resolvers';
+import { getLoginTargets } from '@src/login';
+import { FORM_QUERIES } from '@src/login/fields';
 import { setInputValue } from '@src/utils/dom';
 
 describe('inputs', function () {
@@ -22,7 +22,7 @@ describe('inputs', function () {
     });
 
     it('fetches forms by name', function (this: FetchFormsWithInputsContext) {
-      findFormsWithInputs(this.queryEl as any);
+      getLoginTargets(this.queryEl as any);
       expect(this.queryEl.querySelectorAll.calledWithExactly(FORM_QUERIES.join(','))).to.be.true;
       expect(this.queryEl.querySelectorAll.calledOnce).to.be.true;
     });
@@ -34,7 +34,7 @@ describe('inputs', function () {
         tagName: 'form',
       };
       this.forms.push(fakeForm);
-      findFormsWithInputs(this.queryEl as any);
+      getLoginTargets(this.queryEl as any);
       expect(fakeForm.querySelectorAll.callCount).to.equal(5);
     });
 
@@ -50,7 +50,7 @@ describe('inputs', function () {
         tagName: 'form',
       };
       this.forms.push(fakeForm);
-      const forms = findFormsWithInputs(this.queryEl as any);
+      const forms = getLoginTargets(this.queryEl as any);
       expect(forms).to.have.lengthOf(0);
     });
   });

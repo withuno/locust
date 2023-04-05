@@ -145,7 +145,7 @@ export const SUBMIT_BUTTON_SPEC: FieldSpec = {
     const buttons = Array.prototype.slice.call(root.querySelectorAll(query)) as HTMLElement[];
 
     buttons
-      .filter((button) => button.hasAttribute(loginButtonAttr) === false)
+      .filter((button) => !button.hasAttribute(loginButtonAttr))
       .forEach((button) => {
         const text = button.innerText.trim().toLowerCase();
         const hasLoginText = loginTextRegExp.test(text);
