@@ -1,3 +1,15 @@
+# v0.4.5 (Wed Apr 05 2023)
+
+#### 🐛 Bug Fix
+
+- Compatibility improvements [#18](https://github.com/withuno/locust/pull/18) ([@smithki](https://github.com/smithki))
+
+#### Authors: 1
+
+- Ian K Smith ([@smithki](https://github.com/smithki))
+
+---
+
 # v0.4.4 (Fri Mar 31 2023)
 
 #### 🐛 Bug Fix
