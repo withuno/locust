@@ -1,4 +1,4 @@
-import isVisible from 'is-visible';
+import { isVisible } from './isVisible';
 
 export interface FieldSpec<Type extends HTMLElement = HTMLElement> {
   root?: Document | HTMLElement;

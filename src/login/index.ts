@@ -1,10 +1,9 @@
 /* eslint-disable prefer-destructuring */
 
-import isVisible from 'is-visible';
-
 import { FORM_QUERIES, PASSWORD_FIELD_SPEC, SUBMIT_BUTTON_SPEC, USERNAME_FIELD_SPEC } from './fields';
 import { LoginTarget } from './login-target';
 import { isFormElement } from '../utils/dom';
+import { isVisible } from '../utils/isVisible';
 import { resolveElements } from '../utils/resolve-elements';
 
 /**

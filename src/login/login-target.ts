@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
-import { isVisible } from 'is-visible';
 
 import { setInputValue } from '../utils/dom';
+import { isVisible } from '../utils/isVisible';
 
 const FORCE_SUBMIT_DELAY = 7500;
 
