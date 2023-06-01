@@ -1,3 +1,15 @@
+# v0.4.6 (Thu Jun 01 2023)
+
+#### 🐛 Bug Fix
+
+- use uno's internal isVisible function [#19](https://github.com/withuno/locust/pull/19) ([@ceberly](https://github.com/ceberly))
+
+#### Authors: 1
+
+- Chris Eberly ([@ceberly](https://github.com/ceberly))
+
+---
+
 # v0.4.5 (Wed Apr 05 2023)
 
 #### 🐛 Bug Fix
