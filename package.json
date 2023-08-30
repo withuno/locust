@@ -1,6 +1,6 @@
 {
   "name": "@withuno/locust",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "A fork of @buttercup/locust with TypeScript support and new features incoming...",
   "author": "Uno Team <open-source@uno.app> (https://uno.app)",
   "contributors": [
