@@ -1,3 +1,15 @@
+# v0.4.7 (Wed Aug 30 2023)
+
+#### ⚠️ Pushed to `main`
+
+- simplify locust implementation ([@smithki](https://github.com/smithki))
+
+#### Authors: 1
+
+- Ian K Smith ([@smithki](https://github.com/smithki))
+
+---
+
 # v0.4.6 (Thu Jun 01 2023)
 
 #### 🐛 Bug Fix
