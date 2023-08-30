@@ -1,8 +1,8 @@
-import { isVisible } from './isVisible';
+import { isElementVisible } from './dom';
 
-export interface FieldSpec<Type extends HTMLElement = HTMLElement> {
-  root?: Document | HTMLElement;
-  prepare?: (root: Document | HTMLElement) => void;
+export interface FieldSpec<El extends HTMLElement = HTMLElement> {
+  root?: Document | ShadowRoot | HTMLElement;
+  prepare?: (root: Document | ShadowRoot | HTMLElement) => void;
   find: {
     selectors: readonly string[];
     sort?: Array<{
@@ -12,7 +12,9 @@ export interface FieldSpec<Type extends HTMLElement = HTMLElement> {
   };
 }
 
-export type ElementTypeFromFieldSpec<Spec extends FieldSpec<any>> = Spec extends FieldSpec<infer Type> ? Type : never;
+export type ExtractElementTypeFromFieldSpec<Spec extends FieldSpec<any>> = Spec extends FieldSpec<infer El>
+  ? El
+  : never;
 
 const VISIBILE_SCORE_INCREMENT = 8;
 
@@ -25,8 +27,8 @@ const VISIBILE_SCORE_INCREMENT = 8;
  */
 export function resolveElements<Spec extends FieldSpec<any>>(
   spec: Spec,
-  root: Document | HTMLElement = document,
-): ElementTypeFromFieldSpec<Spec>[] {
+  root: Document | ShadowRoot | HTMLElement = document,
+): HTMLElement[] {
   const { prepare, find } = spec;
   const { selectors, sort: sortTests = [] } = find;
 
@@ -41,7 +43,7 @@ export function resolveElements<Spec extends FieldSpec<any>>(
       const value = check.test.test(html) ? check.weight : 0;
       return current + value;
     }, 0);
-    if (isVisible(el)) {
+    if (isElementVisible(el)) {
       score += VISIBILE_SCORE_INCREMENT;
     }
     el.setAttribute('data-uno-score', String(score));
@@ -58,5 +60,5 @@ export function resolveElements<Spec extends FieldSpec<any>>(
       return 1;
     }
     return 0;
-  }) as ElementTypeFromFieldSpec<Spec>[];
+  }) as ExtractElementTypeFromFieldSpec<Spec>[];
 }

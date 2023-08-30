@@ -16,48 +16,28 @@ Locust helps find **login forms** by searching the DOM for common login form ele
 ## Usage
 
 ```ts
-import { getLoginTarget } from "@withuno/locust";
-const { getLoginTarget } = Locust;
+import { LoginTarget } from "@withuno/locust";
 
-getLoginTarget().login("myUsername", "myPassword");
+const target = LoginTarget.find();
+
+if (target) {
+  const form = target.get("form");
+  const usernameInput = target.get("username");
+  const passwordInput = target.get("password");
+  const submitButton = target.get("submit");
+
+  usernameInput.value = "myUsername";
+  passwordInput.value = "myPassword";
+  submitButton.click();
+}
 ```
 
 The example above enters the username and password in the **best** form found on the page and then proceeds to submit that form (logging the user in).
 
-_To find all forms on a page, use the `getLoginTargets` method instead, which returns an array of login targets. You can then sort through these to find all the different login forms that may exist._
+_To find all forms on a page, use the `LoginTarget.findAll()` method instead, which returns an array of login targets. You can then sort through these to find all the different login forms that may exist._
 
-In the case that you don't want to automatically log in, but still enter the details, you can use the following example:
-
-> **Note**
-> `getLoginTarget` may return `null` if no form is found.
-
-```ts
-getLoginTarget().enterDetails("myUsername", "myPassword");
-```
-
-
-### Events
-
-Locust login targets will emit events when certain things happen. To listen for changes to the values of usernames and passwords on forms simply attach event listeners:
-
-```ts
-const target = getLoginTarget();
-target.events.on("valueChanged", ({ type, value }) => {
-    if (type === "username") {
-        console.log("New username:", value);
-    }
-});
-// `type` can be "username" or "password"
-```
-
-You can also listen to form submissions:
-
-```ts
-const target = getLoginTarget();
-target.events.once("formSubmitted", ({ source }) => {
-    // `source` will either be "submitButton" or "form"
-});
-```
+> [!NOTE]
+> `LoginTarget.find()` may return `null` if no form is found.
 
 ---
 

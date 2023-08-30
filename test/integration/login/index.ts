@@ -40,7 +40,7 @@ async function executeTestCase(config: TestCase, page: Page) {
       throw new Error('No global Locust variable found');
     }
 
-    const target: LoginTarget = (window as any).Locust.getLoginTarget();
+    const target: LoginTarget = (window as any).Locust.LoginTarget.find();
 
     if (!target) {
       throw new Error('No login targets found');
@@ -48,19 +48,19 @@ async function executeTestCase(config: TestCase, page: Page) {
 
     if (expectedFields && expectedFields.username) {
       const usernameField = document.querySelector(expectedFields.username);
-      if (target.usernameField !== usernameField) {
+      if (target.get('username') !== usernameField) {
         throw new Error(`No username field found matching query: ${expectedFields.username}`);
       }
     }
     if (expectedFields && expectedFields.password) {
       const passwordField = document.querySelector(expectedFields.password);
-      if (target.passwordField !== passwordField) {
+      if (target.get('password') !== passwordField) {
         throw new Error(`No password field found matching query: ${expectedFields.password}`);
       }
     }
     if (expectedFields && expectedFields.submit) {
       const submitButton = document.querySelector(expectedFields.submit);
-      if (target.submitButton !== submitButton) {
+      if (target.get('submit') !== submitButton) {
         throw new Error(`No submit button found matching query: ${expectedFields.submit}`);
       }
     }

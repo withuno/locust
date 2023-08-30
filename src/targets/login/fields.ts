@@ -1,4 +1,4 @@
-import { FieldSpec } from '../utils/resolve-elements';
+import { FieldSpec } from '../../utils/resolve-elements';
 
 // These queries are all modified to that they match inputs of type=text as well
 // as inputs with no type attribute at all. Each line (query) is turned into 2

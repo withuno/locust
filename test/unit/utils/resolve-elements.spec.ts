@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { USERNAME_FIELD_SPEC } from '@src/login/fields';
+import { USERNAME_FIELD_SPEC } from '@src/targets/login/fields';
 import { resolveElements } from '@src/utils/resolve-elements';
 
 describe('resolveElements', function () {
